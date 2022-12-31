@@ -1,5 +1,5 @@
 
-# nostr_startr
+# Startr
 
 Startr is a utility for desktop, it aims to be an assistant to help improve the UX of nostr by helping to securely store private keys and connect with your favorite clients.
 At the moment the project is functional, although there are many more features to be developed.
