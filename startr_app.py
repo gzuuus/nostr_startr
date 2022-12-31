@@ -67,7 +67,7 @@ def setupkeys(status):
             if do.lower().strip() == 'y':
                 check_nostr_console()
             else:
-                return complete
+                return False
 
 def startr(nostr_console):                
         print(f'User: {get_key("user")}')
