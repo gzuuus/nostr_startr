@@ -1,3 +1,4 @@
+from nostr import bech32
 from nostr.bech32 import bech32_encode, bech32_decode, convertbits
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
