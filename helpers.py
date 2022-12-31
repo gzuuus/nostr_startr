@@ -4,15 +4,15 @@ from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-import base64
+import base64, json, os
 config_path=('startr_config.json')
 salt = b'l21344-er4g6er-!"!"5465we7f..ASDeefSSSllolloolLLOooolsa'
 
+#Nostr
 def hex64_to_bech32(prefix: str, hex_key: str):
     if is_hex_key(hex_key):
         converted_bits = bech32.convertbits(bytes.fromhex(hex_key), 8, 5)
         return bech32_encode(prefix, converted_bits, bech32.Encoding.BECH32)
-
 
 def bech32_to_hex64(prefix: str, b_key: str):
     hrp, data, spec = bech32_decode(b_key)
@@ -24,8 +24,6 @@ def bech32_to_hex64(prefix: str, b_key: str):
         return False
     return private_key
 
-
-# TODO: regex for this
 def is_bech32_key(hrp: str, key_str: str) -> bool:
     if key_str[:4] == hrp and len(key_str) == 63:
         return True
@@ -34,6 +32,7 @@ def is_bech32_key(hrp: str, key_str: str) -> bool:
 def is_hex_key(k):
     return len(k) == 64 and all(c in '1234567890abcdefABCDEF' for c in k)
 
+#Encrypt/D
 def encrypt_key(password, to_encrypt):
     to_encrypt = to_encrypt.encode()
 
@@ -50,7 +49,6 @@ def encrypt_key(password, to_encrypt):
     encrypted_string_decode=encrypted_string.decode()
     return encrypted_string_decode
 
-
 def decrypt_key(password, to_decrypt):
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -65,7 +63,16 @@ def decrypt_key(password, to_decrypt):
         pw = f.decrypt(to_decrypt)
         return pw.decode()
     except InvalidToken:
+        print('Incorrect password')
         return False
+
+def get_key(skey):
+    with open(config_path, 'r') as openfile:
+        json_object = json.load(openfile)
+    saved_key=json_object[skey]
+    return saved_key
+
+#Promt style
 splash="""\
 
 ░██████╗████████╗░█████╗░██████╗░████████╗██████╗░

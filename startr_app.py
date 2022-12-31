@@ -1,4 +1,4 @@
-import re, json, os, getpass
+import getpass
 from helpers import *
 from bip39 import bip39
 from nostr.key import PrivateKey
@@ -10,10 +10,10 @@ def setupkeys(status):
     step = 1
     while not complete:
         if step == 1:
-            print('Startr will guide you to securely store your nostr identity')
-            print('You can create a new key pair by typing "new" or you can also store your current private key securely encrypted with a password of your choice')
+            print('Startr will guide you to securely store or create your nostr identity')
+            print('Follow the steps to create a new key pair or store your current private key')
             print(separator)
-            pk = input('Enter private key or type "new" to create a new one:')
+            pk = input('1) Enter private key (copy/paste your current private-key or type "new" to create a new one): ')
             if pk.lower().strip() == 'new':
                 step = 2
             elif is_hex_key(pk.strip()):
@@ -26,9 +26,11 @@ def setupkeys(status):
                 print(f"That doesn\'t seem to be a valid key, use hex or nsec")
         if step == 2:
             print(separator)
-            print('Enter a user and password. The password will encrypt your private key, keep it safe.')
+            print('2) Enter a user and password.')
             uss = input('Username: ')
+            print(f'(Info)Username: {uss} its only a reference for you to recognize your keys, does not have to be your nostr username.')
             pw = getpass.getpass()
+            print('Password will encrypt your private key, keep it safe.')
 
             if len(pw) > 0:
                 print('Password and username created.')
@@ -53,42 +55,39 @@ def setupkeys(status):
             print(f"HEX: ", public_key)
             print(f"Bech32: ", hex64_to_bech32('npub', public_key))
             print(separator)
-
-            finish = input("!!!Backup your keys. Type (y) to continue.")
+            print('Please make a backup of your keys and password, you can also backup the file generated when you confirm (startr_config.json) This file is a keystore of your keys.')
+            finish = input("!!!Backup your keys. Type (y/n) to continue.")
             if finish.lower().strip() == 'y':
                 encrypted_string=encrypt_key(PW, PK)
                 dict={'pubkey': public_key, 'user': uss,'pkey': encrypted_string}
                 json_object = json.dumps(dict, indent=4)
                 with open(config_path, "w") as outfile:
                     outfile.write(json_object)
-                #print(dict)
                 complete=True
             do=input('do you want start nostr_console now? (y/n): ')
             if do.lower().strip() == 'y':
-                check_nostr_console()
+                check_nostr_console(PW)
             else:
                 return False
 
-def startr(nostr_console):                
+def startr(nostr_console, session_pass):                
         print(f'User: {get_key("user")}')
         print(f'Pubkey: {get_key("pubkey")}')
-        pw = getpass.getpass()
+        if session_pass == False:
+            pw = getpass.getpass()
+        else:
+            pw = session_pass
         encrypted_string=get_key("pkey")
         decrypted_string=decrypt_key(pw, encrypted_string)
-        command = os.popen(f"gnome-terminal --tab -- bash -c './{nostr_console} --width=200 -m 12 -l -k {decrypted_string}'")
-        print('Go!')
+        if not decrypted_string == False:
+            command = os.popen(f"gnome-terminal --tab -- bash -c './{nostr_console} --width=200 -m 12 -l -k {decrypted_string}'")
+            print('Go!🔥')
 
-def get_key(skey):
-    with open(config_path, 'r') as openfile:
-        json_object = json.load(openfile)
-    saved_key=json_object[skey]
-    return saved_key
-
-def check_nostr_console():
+def check_nostr_console(session_pass):
     nostr_console = [filename for filename in os.listdir('.') if filename.startswith("nostr_console")]
     if len(nostr_console) > 0:
-        startr(nostr_console[0])
-        return True
+        startr(nostr_console[0], session_pass)
+        return True, session_pass
     else:
         print('nostr_console no detected please go to https://github.com/vishalxl/nostr_console/releases and put the release file in the same path as startr')
         return False
@@ -101,7 +100,7 @@ if __name__=='__main__':
         print(f'hello: {get_key("user")}')
         menu=input('1. start nostr_console, 2. Reset keys: ')
         if menu == '1':
-            check_nostr_console()
+            check_nostr_console(False)
         if menu == '2':
             os.remove(config_path)
             print('reset done!')

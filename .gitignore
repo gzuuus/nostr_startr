@@ -109,6 +109,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+/startr_config.json
+/nostr_console_linux_amd64
 
 # Spyder project settings
 .spyderproject
