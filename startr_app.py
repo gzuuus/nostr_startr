@@ -26,9 +26,8 @@ def setupkeys(status):
                 print(f"That doesn\'t seem to be a valid key, use hex or nsec")
         if step == 2:
             print(separator)
-            print('2) Enter a user and password.')
+            print('2) Enter a user and password. (Info)Username its only a reference for you to recognize your keys, does not have to be your nostr username.')
             uss = input('Username: ')
-            print(f'(Info)Username: {uss} its only a reference for you to recognize your keys, does not have to be your nostr username.')
             pw = getpass.getpass()
             print('Password will encrypt your private key, keep it safe.')
 
@@ -80,7 +79,7 @@ def startr(nostr_console, session_pass):
         encrypted_string=get_key("pkey")
         decrypted_string=decrypt_key(pw, encrypted_string)
         if not decrypted_string == False:
-            command = os.popen(f"gnome-terminal --tab -- bash -c './{nostr_console} --width=200 -m 12 -l -k {decrypted_string}'")
+            command = os.popen(f"gnome-terminal --tab -- bash -c './{nostr_console} --width=200 -m 12 -l -k {decrypted_string}; sleep 3'")
             print('Go!🔥')
 
 def check_nostr_console(session_pass):
