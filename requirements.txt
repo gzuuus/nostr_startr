@@ -1,5 +1,7 @@
 bip39==0.0.2
 cffi==1.15.1
 cryptography==38.0.4
+nostr==0.0.1
 pycparser==2.21
 secp256k1==0.14.0
+websocket-client==1.4.2
