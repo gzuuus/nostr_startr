@@ -5,8 +5,8 @@ Startr is a utility for desktop that aims to be an assistant to help improve the
 At the moment the project is functional, although there are many more features to be developed.
 
 ## Installation:
-
-1. Create a folder for the project and git clone this repo\
+#### Compatibility: linux, more coming
+1. Create a folder for the project, open a terminal and git clone this repo `'git clone https://github.com/gzuuus/nostr_startr'`
 2. Download the latest release of nostr_console: [nostr_console release page](https://github.com/vishalxl/nostr_console/releases/) and put it in the project folder (remember make nostr_console file executable)
 3. Open a terminal `'cd <path/to/project_folder>'` and do `'pip install -r requirements.txt'`
 4. when finish, run startr_app with `'python startr_app.py'` in the terminal
@@ -24,6 +24,8 @@ At the moment the project is functional, although there are many more features t
 ### Roadmap:
  - [ ] Multi account/key option
  - [ ] Multi configuration option for starting nostr_console
+ - [ ] Improve Key Derivation scheme 
+ - [ ] Make it compatible with more OS
  - [ ] Bundle application into a single package
  - [ ] More on the way
 
