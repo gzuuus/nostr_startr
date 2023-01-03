@@ -110,6 +110,6 @@ if __name__=='__main__':
             pw = getpass.getpass()
             encrypted_string=get_json_data("pkey")
             decrypted_string=decrypt_key(pw, encrypted_string)
-            print(f'> User: {get_json_data("uss")}')
+            print(f'> User: {get_json_data("user")}')
             print(f'> Public key: {get_json_data("pubkey")}')
             print(f'> Private key: {decrypted_string}')
