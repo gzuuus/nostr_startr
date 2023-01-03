@@ -100,11 +100,16 @@ if __name__=='__main__':
         setupkeys(False)
     else:
         print(f'hello: {get_json_data("user")}')
-        menu=input('1. start nostr_console, 2. Reset keys: ')
+        menu=input('1. start nostr_console, 2. Reset keys, 3. Decrypt/show saved keys: ')
         if menu == '1':
             check_nostr_console(False)
         if menu == '2':
             os.remove(config_path)
             print('reset done!')
-
-            
+        if menu == '3':
+            pw = getpass.getpass()
+            encrypted_string=get_json_data("pkey")
+            decrypted_string=decrypt_key(pw, encrypted_string)
+            print(f'> User: {get_json_data("uss")}')
+            print(f'> Public key: {get_json_data("pubkey")}')
+            print(f'> Private key: {decrypted_string}')

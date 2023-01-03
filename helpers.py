@@ -6,7 +6,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 import base64, json, os
 config_path=('startr_config.json')
-#salt = b'l21344-er4g6er-!"!"5465we7f..ASDeefSSSllolloolLLOooolsa'
 
 #Nostr
 def hex64_to_bech32(prefix: str, hex_key: str):
