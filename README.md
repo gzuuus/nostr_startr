@@ -24,7 +24,7 @@ At the moment the project is functional, although there are many more features t
 ### Roadmap:
  - [ ] Multi account/key option
  - [ ] Multi configuration option for starting nostr_console
- - [ ] Improve Key Derivation scheme 
+ - [x] Improve Key Derivation scheme 
  - [ ] Make it compatible with more OS
  - [ ] Bundle application into a single package
  - [ ] More on the way
