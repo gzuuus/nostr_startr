@@ -43,14 +43,14 @@ def setupkeys(status):
                 pk = PrivateKey(bytes.fromhex(PK))
             PK = pk.hex()
             public_key = pk.public_key.hex()
-            print(f"Username: ", uss)
+            print(f"> Username: ", uss)
             print(separator)
-            print(f"Private key:")
+            print(f"> Private key:")
             print(f"Mnemonic: ", "{}".format(bip39.encode_bytes(bytes.fromhex(PK))))
             print(f"HEX: ", PK)
             print(f"Bech32: ", hex64_to_bech32('nsec', PK))
             print(separator)
-            print(f"Public key: ")
+            print(f"> Public key: ")
             print(f"HEX: ", public_key)
             print(f"Bech32: ", hex64_to_bech32('npub', public_key))
             print(separator)
@@ -58,10 +58,13 @@ def setupkeys(status):
             finish = input("!!!Backup your keys. Type (y/n) to continue.")
             if finish.lower().strip() == 'y':
                 encrypted_string=encrypt_key(PW, PK)
-                dict={'pubkey': public_key, 'user': uss,'pkey': encrypted_string}
+                #print(salt, salt_for_storage)
+                dict={'pubkey': public_key, 'user': uss,'pkey': encrypted_string, 'scrypt':{'salt':salt_for_storage.decode(), 'n':scrypt_n, 'r':scrypt_r, 'p':scrypt_p}}
                 json_object = json.dumps(dict, indent=4)
                 with open(config_path, "w") as outfile:
-                    outfile.write(json_object)
+                    outfile.write(json_object)                
+                get_all_current_scrypt=(get_json_data('scrypt'))
+                current_salt=get_all_current_scrypt['salt']
                 complete=True
             do=input('do you want start nostr_console now? (y/n): ')
             if do.lower().strip() == 'y':
@@ -70,13 +73,13 @@ def setupkeys(status):
                 return False
 
 def startr(nostr_console, session_pass):                
-        print(f'User: {get_key("user")}')
-        print(f'Pubkey: {get_key("pubkey")}')
+        print(f'User: {get_json_data("user")}')
+        print(f'Pubkey: {get_json_data("pubkey")}')
         if session_pass == False:
             pw = getpass.getpass()
         else:
             pw = session_pass
-        encrypted_string=get_key("pkey")
+        encrypted_string=get_json_data("pkey")
         decrypted_string=decrypt_key(pw, encrypted_string)
         if not decrypted_string == False:
             command = os.popen(f"gnome-terminal --tab -- bash -c './{nostr_console} --width=200 -m 12 -l -k {decrypted_string}; sleep 3'")
@@ -96,7 +99,7 @@ if __name__=='__main__':
     if not os.path.exists(config_path):
         setupkeys(False)
     else:
-        print(f'hello: {get_key("user")}')
+        print(f'hello: {get_json_data("user")}')
         menu=input('1. start nostr_console, 2. Reset keys: ')
         if menu == '1':
             check_nostr_console(False)

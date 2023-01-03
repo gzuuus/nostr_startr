@@ -3,10 +3,10 @@ from nostr.bech32 import bech32_encode, bech32_decode, convertbits
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 import base64, json, os
 config_path=('startr_config.json')
-salt = b'l21344-er4g6er-!"!"5465we7f..ASDeefSSSllolloolLLOooolsa'
+#salt = b'l21344-er4g6er-!"!"5465we7f..ASDeefSSSllolloolLLOooolsa'
 
 #Nostr
 def hex64_to_bech32(prefix: str, hex_key: str):
@@ -33,14 +33,21 @@ def is_hex_key(k):
     return len(k) == 64 and all(c in '1234567890abcdefABCDEF' for c in k)
 
 #Encrypt/D
+scrypt_n=16384
+scrypt_r=8
+scrypt_p=1
+salt_for_storage = Fernet.generate_key() 
+salt = base64.urlsafe_b64decode(salt_for_storage)
+
 def encrypt_key(password, to_encrypt):
     to_encrypt = to_encrypt.encode()
 
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
+    kdf = Scrypt(
         salt=salt,
-        iterations=100000,
+        length=32,
+        n=scrypt_n,
+        r=scrypt_r,
+        p=scrypt_p,
     )
     _key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
 
@@ -50,14 +57,15 @@ def encrypt_key(password, to_encrypt):
     return encrypted_string_decode
 
 def decrypt_key(password, to_decrypt):
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
+    get_all_current_scrypt=(get_json_data('scrypt'))
+    kdf = Scrypt(        
+        salt=base64.urlsafe_b64decode(get_all_current_scrypt['salt']),
         length=32,
-        salt=salt,
-        iterations=100000,
+        n=scrypt_n,
+        r=scrypt_r,
+        p=scrypt_p,
     )
     _key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
-
     f = Fernet(_key)
     try:
         pw = f.decrypt(to_decrypt)
@@ -66,11 +74,11 @@ def decrypt_key(password, to_decrypt):
         print('Incorrect password')
         return False
 
-def get_key(skey):
+def get_json_data(data):
     with open(config_path, 'r') as openfile:
         json_object = json.load(openfile)
-    saved_key=json_object[skey]
-    return saved_key
+    saved_data=json_object[data]
+    return saved_data
 
 #Promt style
 splash="""\
