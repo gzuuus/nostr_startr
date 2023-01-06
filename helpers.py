@@ -4,8 +4,9 @@ from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
-import base64, json, os
-config_path=('startr_config.json')
+import base64, json, os, getpass
+from startr_app import get_json_data
+config_path=('.json')
 
 #Nostr
 def hex64_to_bech32(prefix: str, hex_key: str):
@@ -35,12 +36,11 @@ def is_hex_key(k):
 scrypt_n=16384
 scrypt_r=8
 scrypt_p=1
-salt_for_storage = Fernet.generate_key() 
-salt = base64.urlsafe_b64decode(salt_for_storage)
 
 def encrypt_key(password, to_encrypt):
+    salt_for_storage = Fernet.generate_key() 
+    salt = base64.urlsafe_b64decode(salt_for_storage)
     to_encrypt = to_encrypt.encode()
-
     kdf = Scrypt(
         salt=salt,
         length=32,
@@ -49,20 +49,22 @@ def encrypt_key(password, to_encrypt):
         p=scrypt_p,
     )
     _key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
-
     f = Fernet(_key)
     encrypted_string = f.encrypt(to_encrypt)
     encrypted_string_decode=encrypted_string.decode()
-    return encrypted_string_decode
+    return encrypted_string_decode, salt_for_storage
 
-def decrypt_key(password, to_decrypt):
-    get_all_current_scrypt=(get_json_data('scrypt'))
+def decrypt_key(password, to_decrypt, file):
+    get_all_current_scrypt=(get_json_data(file))
     kdf = Scrypt(        
-        salt=base64.urlsafe_b64decode(get_all_current_scrypt['salt']),
+        salt=base64.urlsafe_b64decode(get_all_current_scrypt[0]['scrypt']['salt']),
         length=32,
-        n=scrypt_n,
-        r=scrypt_r,
-        p=scrypt_p,
+        n= get_all_current_scrypt[0]['scrypt']['n'],
+        r= get_all_current_scrypt[0]['scrypt']['r'],
+        p= get_all_current_scrypt[0]['scrypt']['p']
+        #n=scrypt_n,
+        #r=scrypt_r,
+        #p=scrypt_p,
     )
     _key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
     f = Fernet(_key)
@@ -72,12 +74,6 @@ def decrypt_key(password, to_decrypt):
     except InvalidToken:
         print('Incorrect password')
         return False
-
-def get_json_data(data):
-    with open(config_path, 'r') as openfile:
-        json_object = json.load(openfile)
-    saved_data=json_object[data]
-    return saved_data
 
 #Promt style
 splash="""\
@@ -89,4 +85,4 @@ splash="""\
 ██████╔╝░░░██║░░░██║░░██║██║░░██║░░░██║░░░██║░░██║
 ╚═════╝░░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚═╝░░╚═╝                                                                                                          
                     """
-separator="---------------------"
+separator="-------------------🅢 🅣 🅐 🅡 🅣 🅡 -------------------"

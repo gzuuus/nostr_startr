@@ -21,8 +21,8 @@ At the moment the project is functional, although there are many more features t
  - [x] Crate new or store private key
  - [x] Store keys in a safe way
  - [x] Connection and launch to nostr_console (linux only)
+ - [x] Multi account/key option
 ### Roadmap:
- - [ ] Multi account/key option
  - [ ] Multi configuration option for starting nostr_console
  - [x] Improve Key Derivation scheme 
  - [ ] Make it compatible with more OS

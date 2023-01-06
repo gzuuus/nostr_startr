@@ -3,6 +3,35 @@ from helpers import *
 from bip39 import bip39
 from nostr.key import PrivateKey
 
+def init():
+    print(separator)
+    fetch_config_data, current_file_name=fetch_config()
+    menu=input('1. start nostr_console, 2. Generate new key, 3. Decrypt/show saved keys, 4. Reset key, 5. Switch identity,  6. Exit: ')
+    if menu == '1':        
+        check_nostr_console(False, fetch_config_data, current_file_name)
+
+    if menu == '2':
+        setupkeys(False)
+    if menu == '3':
+        print(f'> User: {fetch_config_data["user"]}')
+        print(f'> Public key(HEX): {fetch_config_data["pubkey"]}')
+        print(f'> Public key(npub): {fetch_config_data["npub"]}')
+        if input('> Show private key?(y/n): ').lower().strip() == 'y':
+            pw = getpass.getpass()
+            encrypted_string=fetch_config_data['pkey']
+            decrypted_string=decrypt_key(pw, encrypted_string,current_file_name)
+            print(f'> Private key: {decrypted_string}')
+            init()
+        else: init()
+    if menu == '4':
+        os.remove(current_file_name)
+        print('reset done!')
+        init()
+    if menu == '5':
+        init()
+    if menu == '6':
+        quit()
+
 def setupkeys(status):
     PK=None
     PW=None
@@ -55,61 +84,76 @@ def setupkeys(status):
             print(f"Bech32: ", hex64_to_bech32('npub', public_key))
             print(separator)
             print('Please make a backup of your keys and password, you can also backup the file generated when you confirm (startr_config.json) This file is a keystore of your keys.')
-            finish = input("!!!Backup your keys. Type (y/n) to continue.")
-            if finish.lower().strip() == 'y':
-                encrypted_string=encrypt_key(PW, PK)
-                #print(salt, salt_for_storage)
-                dict={'pubkey': public_key, 'user': uss,'pkey': encrypted_string, 'scrypt':{'salt':salt_for_storage.decode(), 'n':scrypt_n, 'r':scrypt_r, 'p':scrypt_p}}
+            if input("!!!Backup your keys. Type (y/n) to continue.").lower().strip() == 'y':
+                encrypted_string, salt_for_storage=encrypt_key(PW, PK)
+                dict={'user': uss, 'pubkey': public_key,'npub': hex64_to_bech32('npub', public_key),'pkey': encrypted_string, 'scrypt':{'salt':salt_for_storage.decode(), 'n':scrypt_n, 'r':scrypt_r, 'p':scrypt_p}}
                 json_object = json.dumps(dict, indent=4)
-                with open(config_path, "w") as outfile:
-                    outfile.write(json_object)                
-                get_all_current_scrypt=(get_json_data('scrypt'))
-                current_salt=get_all_current_scrypt['salt']
+                with open(f'stc_{uss}{config_path}', "w") as outfile:
+                    outfile.write(json_object)           
                 complete=True
-            do=input('do you want start nostr_console now? (y/n): ')
-            if do.lower().strip() == 'y':
-                check_nostr_console(PW)
-            else:
-                return False
+                init()
 
-def startr(nostr_console, session_pass):                
-        print(f'User: {get_json_data("user")}')
-        print(f'Pubkey: {get_json_data("pubkey")}')
-        if session_pass == False:
-            pw = getpass.getpass()
-        else:
-            pw = session_pass
-        encrypted_string=get_json_data("pkey")
-        decrypted_string=decrypt_key(pw, encrypted_string)
-        if not decrypted_string == False:
-            command = os.popen(f"gnome-terminal --tab -- bash -c './{nostr_console} --width=200 -m 12 -l -k {decrypted_string}; sleep 3'")
-            print('Go!🔥')
-
-def check_nostr_console(session_pass):
+def check_nostr_console(session_pass, session_data, session_file):
     nostr_console = [filename for filename in os.listdir('.') if filename.startswith("nostr_console")]
     if len(nostr_console) > 0:
-        startr(nostr_console[0], session_pass)
-        return True, session_pass
+        startr(nostr_console[0], session_pass, session_data, session_file)
+        return True, session_pass, session_data
     else:
         print('nostr_console no detected please go to https://github.com/vishalxl/nostr_console/releases and put the release file in the same path as startr')
         return False
 
+def startr(nostr_console, session_pass, session_data, current_file_name):
+    fetch_config_data = session_data
+    print(f'User: {fetch_config_data["user"]}')
+    print(f'Pubkey: {fetch_config_data["pubkey"]}')
+    if session_pass == False:
+        pw = getpass.getpass()
+    else:
+        pw = session_pass
+    encrypted_string=fetch_config_data["pkey"]
+    decrypted_string=decrypt_key(pw, encrypted_string, current_file_name)
+    if not decrypted_string == False:
+        print('Go!🔥')
+        command = os.system(f"./{nostr_console} --width=200 -m 12 -l -k {decrypted_string}; sleep 1")        
+        init()
+
+def fetch_config():
+    fetch_config = [filename for filename in os.listdir('.') if filename.endswith(".json")]
+    if len(fetch_config) == 1:
+        fetch_config_data, current_file_name=get_json_data(fetch_config[0])
+        print(f'> Hello: {fetch_config_data["user"]}')
+        return fetch_config_data, current_file_name
+    else:
+        print('Select user by index number: ')
+        fetch_config_data, current_file_name = get_json_data(False)
+        print(f'> Hello: {fetch_config_data["user"]}')
+        return fetch_config_data, current_file_name
+
+def get_json_data(user_select):   
+    if user_select == False:
+        fetch_config = [filename for filename in os.listdir('.') if filename.endswith(".json")]
+        for (i, item) in enumerate(fetch_config):
+            print([i], item)
+        pick_user= (input('> Chose user or type "new": '))
+        if pick_user == 'new' or pick_user == '':
+            setupkeys(False)
+        
+        else:
+            pick_user=int(pick_user)       
+            if pick_user < len(fetch_config):
+                user_select=fetch_config[pick_user]
+            else:
+                print('out of range')
+                init()
+    with open(user_select, 'r') as openfile:
+        json_object = json.load(openfile)
+    saved_data=json_object
+    return saved_data, user_select
+
+#def setup_nostr_console (...):
+
 if __name__=='__main__':
     print(splash)
-    if not os.path.exists(config_path):
+    if not any(fname.endswith('.json') for fname in os.listdir('.')):
         setupkeys(False)
-    else:
-        print(f'hello: {get_json_data("user")}')
-        menu=input('1. start nostr_console, 2. Reset keys, 3. Decrypt/show saved keys: ')
-        if menu == '1':
-            check_nostr_console(False)
-        if menu == '2':
-            os.remove(config_path)
-            print('reset done!')
-        if menu == '3':
-            pw = getpass.getpass()
-            encrypted_string=get_json_data("pkey")
-            decrypted_string=decrypt_key(pw, encrypted_string)
-            print(f'> User: {get_json_data("user")}')
-            print(f'> Public key: {get_json_data("pubkey")}')
-            print(f'> Private key: {decrypted_string}')
+    else: init()
