@@ -4,14 +4,25 @@ from bip39 import bip39
 from nostr.key import PrivateKey
 
 def init():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print(splash)
     print(separator)
     fetch_config_data, current_file_name=fetch_config()
     menu=input('1. start nostr_console, 2. Generate new key, 3. Decrypt/show saved keys, 4. Reset key, 5. Switch identity,  6. Exit: ')
-    if menu == '1':        
+    if menu == '1':
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(splash)
+        print(separator)
         check_nostr_console(False, fetch_config_data, current_file_name)
     if menu == '2':
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(splash)
+        print(separator)
         setupkeys(False)
     if menu == '3':
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(splash)
+        print(separator)
         print(f'> User: {fetch_config_data["user"]}')
         print(f'> Public key(HEX): {fetch_config_data["pubkey"]}')
         print(f'> Public key(npub): {fetch_config_data["npub"]}')
@@ -20,10 +31,18 @@ def init():
             encrypted_string=fetch_config_data['pkey']
             decrypted_string=decrypt_key(pw, encrypted_string,current_file_name)
             print(f'> Private key: {decrypted_string}')
+            input('> Press any key to continue')
+            os.system('cls' if os.name == 'nt' else 'clear')
             init()
-        else: init()
+        else:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            init()
     if menu == '4':
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(splash)
+        print(separator)
         os.remove(current_file_name)
+        os.system('cls' if os.name == 'nt' else 'clear')
         print('reset done!')
         init()
     if menu == '5':
@@ -32,6 +51,9 @@ def init():
         quit()
 
 def setupkeys(status):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print(splash)
+    print(separator)
     PK=None
     PW=None
     complete = status
@@ -97,6 +119,7 @@ def setupkeys(status):
             with open(f'stc_{uss}{config_path}', "w") as outfile:
                 outfile.write(json_object)           
             complete=True
+            os.system('cls' if os.name == 'nt' else 'clear')
             init()
 
 def check_nostr_console(session_pass, session_data, session_file):
@@ -122,6 +145,7 @@ def startr(nostr_console, session_pass, session_data, current_file_name):
     if not decrypted_string == False:
         print('Go!🔥')
         command = subprocess.run([f"./{nostr_console}","-m", "12", "-l","-k",decrypted_string])
+        os.system('cls' if os.name == 'nt' else 'clear')
         init()
 
 def fetch_config():
@@ -136,7 +160,7 @@ def fetch_config():
         print(f'> Hello: {fetch_config_data["user"]}')
         return fetch_config_data, current_file_name
 
-def get_json_data(user_select):   
+def get_json_data(user_select):
     if user_select == False:
         fetch_config = [filename for filename in os.listdir('.') if filename.endswith(".json")]
         for (i, item) in enumerate(fetch_config):
@@ -150,6 +174,7 @@ def get_json_data(user_select):
             if pick_user < len(fetch_config):
                 user_select=fetch_config[pick_user]
             else:
+                os.system('cls' if os.name == 'nt' else 'clear')
                 print('out of range')
                 init()
     with open(user_select, 'r') as openfile:
@@ -160,7 +185,6 @@ def get_json_data(user_select):
 #def setup_nostr_console (...):
 
 if __name__=='__main__':
-    print(splash)
     if not any(fname.endswith('.json') for fname in os.listdir('.')):
         setupkeys(False)
     else: init()
