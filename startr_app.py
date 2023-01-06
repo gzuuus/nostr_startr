@@ -1,4 +1,4 @@
-import getpass
+import getpass, subprocess
 from helpers import *
 from bip39 import bip39
 from nostr.key import PrivateKey
@@ -9,7 +9,6 @@ def init():
     menu=input('1. start nostr_console, 2. Generate new key, 3. Decrypt/show saved keys, 4. Reset key, 5. Switch identity,  6. Exit: ')
     if menu == '1':        
         check_nostr_console(False, fetch_config_data, current_file_name)
-
     if menu == '2':
         setupkeys(False)
     if menu == '3':
@@ -52,18 +51,23 @@ def setupkeys(status):
                 step = 2
                 PK = bech32_to_hex64('nsec', pk.strip())
             else:
+                print(separator)
                 print(f"That doesn\'t seem to be a valid key, use hex or nsec")
         if step == 2:
             print(separator)
             print('2) Enter a user and password. (Info)Username its only a reference for you to recognize your keys, does not have to be your nostr username.')
             uss = input('Username: ')
             pw = getpass.getpass()
-            print('Password will encrypt your private key, keep it safe.')
-
-            if len(pw) > 0:
-                print('Password and username created.')
-                PW = pw.strip()
-                step = 3
+            pw_check = getpass.getpass(prompt='Repeat password: ')
+            if pw == pw_check:
+                if len(pw) > 0:
+                    print('Password and username created.')
+                    PW = pw.strip()
+                    print('Password will encrypt your private key, keep it safe.')
+                    step = 3
+            else:
+                print('passwords do not match')
+                step = 2
         if step == 3:
             print(separator)
             if PK is None:
@@ -85,13 +89,15 @@ def setupkeys(status):
             print(separator)
             print('Please make a backup of your keys and password, you can also backup the file generated when you confirm (startr_config.json) This file is a keystore of your keys.')
             if input("!!!Backup your keys. Type (y/n) to continue.").lower().strip() == 'y':
-                encrypted_string, salt_for_storage=encrypt_key(PW, PK)
-                dict={'user': uss, 'pubkey': public_key,'npub': hex64_to_bech32('npub', public_key),'pkey': encrypted_string, 'scrypt':{'salt':salt_for_storage.decode(), 'n':scrypt_n, 'r':scrypt_r, 'p':scrypt_p}}
-                json_object = json.dumps(dict, indent=4)
-                with open(f'stc_{uss}{config_path}', "w") as outfile:
-                    outfile.write(json_object)           
-                complete=True
-                init()
+                print('Keep them safe!')
+            else: print("You'd better have made a backup")
+            encrypted_string, salt_for_storage=encrypt_key(PW, PK)
+            dict={'user': uss, 'pubkey': public_key,'npub': hex64_to_bech32('npub', public_key),'pkey': encrypted_string, 'scrypt':{'salt':salt_for_storage.decode(), 'n':scrypt_n, 'r':scrypt_r, 'p':scrypt_p}}
+            json_object = json.dumps(dict, indent=4)
+            with open(f'stc_{uss}{config_path}', "w") as outfile:
+                outfile.write(json_object)           
+            complete=True
+            init()
 
 def check_nostr_console(session_pass, session_data, session_file):
     nostr_console = [filename for filename in os.listdir('.') if filename.startswith("nostr_console")]
@@ -100,6 +106,7 @@ def check_nostr_console(session_pass, session_data, session_file):
         return True, session_pass, session_data
     else:
         print('nostr_console no detected please go to https://github.com/vishalxl/nostr_console/releases and put the release file in the same path as startr')
+        init()
         return False
 
 def startr(nostr_console, session_pass, session_data, current_file_name):
@@ -114,7 +121,7 @@ def startr(nostr_console, session_pass, session_data, current_file_name):
     decrypted_string=decrypt_key(pw, encrypted_string, current_file_name)
     if not decrypted_string == False:
         print('Go!🔥')
-        command = os.system(f"./{nostr_console} --width=200 -m 12 -l -k {decrypted_string}; sleep 1")        
+        command = subprocess.run([f"./{nostr_console}","-m", "12", "-l","-k",decrypted_string])
         init()
 
 def fetch_config():

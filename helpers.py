@@ -62,9 +62,6 @@ def decrypt_key(password, to_decrypt, file):
         n= get_all_current_scrypt[0]['scrypt']['n'],
         r= get_all_current_scrypt[0]['scrypt']['r'],
         p= get_all_current_scrypt[0]['scrypt']['p']
-        #n=scrypt_n,
-        #r=scrypt_r,
-        #p=scrypt_p,
     )
     _key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
     f = Fernet(_key)
@@ -85,4 +82,4 @@ splash="""\
 ██████╔╝░░░██║░░░██║░░██║██║░░██║░░░██║░░░██║░░██║
 ╚═════╝░░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚═╝░░╚═╝                                                                                                          
                     """
-separator="-------------------🅢 🅣 🅐 🅡 🅣 🅡 -------------------"
+separator="-------------------*STARTR*-------------------"
