@@ -1,4 +1,4 @@
-import getpass, subprocess
+import getpass, subprocess, segno
 from helpers import *
 from bip39 import bip39
 from nostr.key import PrivateKey
@@ -26,6 +26,8 @@ def init():
         print(f'> User: {fetch_config_data["user"]}')
         print(f'> Public key(HEX): {fetch_config_data["pubkey"]}')
         print(f'> Public key(npub): {fetch_config_data["npub"]}')
+        print(f'> Link: https://snort.social/p/{fetch_config_data["npub"]}')
+        qr=subprocess.run(['segno', f'https://snort.social/p/{fetch_config_data["npub"]}', '--compact', '-b', '1'])
         if input('> Show private key?(y/n): ').lower().strip() == 'y':
             pw = getpass.getpass()
             encrypted_string=fetch_config_data['pkey']
@@ -123,7 +125,7 @@ def setupkeys(status):
             init()
 
 def check_nostr_console(session_pass, session_data, session_file):
-    nostr_console = [filename for filename in os.listdir('.') if filename.startswith("nostr_console")]
+    nostr_console = [filename for filename in os.listdir('.') if (filename.startswith("nostr_console") and not filename.endswith(".zip"))]
     if len(nostr_console) > 0:
         startr(nostr_console[0], session_pass, session_data, session_file)
         return True, session_pass, session_data
