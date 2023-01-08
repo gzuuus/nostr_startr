@@ -27,8 +27,9 @@ At the moment the project is functional, although there are many more features t
  - [x] Multi account/key option
  - [x] Shows a direct link and qr code when show/decrypt keys to easy share
 ### Roadmap:
- - [ ] Multi configuration option for starting nostr_console
  - [x] Improve Key Derivation scheme 
+ - [ ] Multi configuration option for starting nostr_console
+ - [ ] RSS reader
  - [ ] Make it compatible with more OS
  - [ ] Bundle application into a single package
  - [ ] More on the way

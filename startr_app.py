@@ -114,7 +114,7 @@ def setupkeys(status):
             print('Please make a backup of your keys and password, you can also backup the file generated when you confirm (startr_config.json) This file is a keystore of your keys.')
             if input("!!!Backup your keys. Type (y/n) to continue.").lower().strip() == 'y':
                 print('Keep them safe!')
-            else: print("You'd better have made a backup")
+            else: input("You'd better have made a backup, press any key to continue")
             encrypted_string, salt_for_storage=encrypt_key(PW, PK)
             dict={'user': uss, 'pubkey': public_key,'npub': hex64_to_bech32('npub', public_key),'pkey': encrypted_string, 'scrypt':{'salt':salt_for_storage.decode(), 'n':scrypt_n, 'r':scrypt_r, 'p':scrypt_p}}
             json_object = json.dumps(dict, indent=4)
@@ -167,9 +167,11 @@ def get_json_data(user_select):
         fetch_config = [filename for filename in os.listdir('.') if filename.endswith(".json")]
         for (i, item) in enumerate(fetch_config):
             print([i], item)
-        pick_user= (input('> Chose user or type "new": '))
+        pick_user= (input('> Chose user by index | Type "new" | Type "x" to exit : '))
         if pick_user == 'new' or pick_user == '':
             setupkeys(False)
+        if pick_user == 'x':
+            quit()
         
         else:
             pick_user=int(pick_user)       
