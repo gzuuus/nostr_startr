@@ -8,7 +8,7 @@ def init():
     print(splash)
     print(separator)
     fetch_config_data, current_file_name=fetch_config()
-    menu=input('1. start nostr_console, 2. Generate new key, 3. Decrypt/show saved keys, 4. Reset key, 5. Switch identity,  6. Exit: ')
+    menu=input('1. Start nostr_console, 2. Generate new key, 3. Decrypt/show saved keys, 4. Reset key, 5. Switch identity,  6. Exit: ')
     if menu == '1':
         os.system('cls' if os.name == 'nt' else 'clear')
         print(splash)
@@ -28,7 +28,7 @@ def init():
         print(f'> Public key(npub): {fetch_config_data["npub"]}')
         print(f'> Link: https://snort.social/p/{fetch_config_data["npub"]}')
         qr=subprocess.run(['segno', f'https://snort.social/p/{fetch_config_data["npub"]}', '--compact', '-b', '1'])
-        if input('> Show private key?(y/n): ').lower().strip() == 'y':
+        if input('> Show private key? Type (y/yes) to continue, (n/no) to cancel: ').lower().strip() == 'y' or finish.lower().strip() == 'yes' or finish.lower().strip() == 'Y' or finish.lower().strip() == 'YES':
             pw = getpass.getpass()
             encrypted_string=fetch_config_data['pkey']
             decrypted_string=decrypt_key(pw, encrypted_string,current_file_name)
@@ -85,12 +85,12 @@ def setupkeys(status):
             pw_check = getpass.getpass(prompt='Repeat password: ')
             if pw == pw_check:
                 if len(pw) > 0:
-                    print('Password and username created.')
+                    print('Username and password created.')
                     PW = pw.strip()
                     print('Password will encrypt your private key, keep it safe.')
                     step = 3
             else:
-                print('passwords do not match')
+                print('Passwords do not match')
                 step = 2
         if step == 3:
             print(separator)
@@ -112,7 +112,7 @@ def setupkeys(status):
             print(f"Bech32: ", hex64_to_bech32('npub', public_key))
             print(separator)
             print('Please make a backup of your keys and password, you can also backup the file generated when you confirm (startr_config.json) This file is a keystore of your keys.')
-            if input("!!!Backup your keys. Type (y/n) to continue.").lower().strip() == 'y':
+            if input("Backup your keys!!! Type (y/yes) to continue, (n/no) to cancel: ").lower().strip() == 'y' or finish.lower().strip() == 'yes' or finish.lower().strip() == 'Y' or finish.lower().strip() == 'YES':
                 print('Keep them safe!')
             else: input("You'd better have made a backup, press any key to continue")
             encrypted_string, salt_for_storage=encrypt_key(PW, PK)
