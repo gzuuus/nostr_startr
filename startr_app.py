@@ -28,7 +28,7 @@ def init():
         print(f'> Public key(npub): {fetch_config_data["npub"]}')
         print(f'> Link: https://snort.social/p/{fetch_config_data["npub"]}')
         qr=subprocess.run(['segno', f'https://snort.social/p/{fetch_config_data["npub"]}', '--compact', '-b', '1'])
-        if input('> Show private key? Type (y/yes) to continue, (n/no) to cancel: ').lower().strip() == 'y' or finish.lower().strip() == 'yes' or finish.lower().strip() == 'Y' or finish.lower().strip() == 'YES':
+        if input('> Show private key? Type (y) to continue, (n/no) to cancel: ').lower().strip() == 'y':
             pw = getpass.getpass()
             encrypted_string=fetch_config_data['pkey']
             decrypted_string=decrypt_key(pw, encrypted_string,current_file_name)
@@ -43,7 +43,8 @@ def init():
         os.system('cls' if os.name == 'nt' else 'clear')
         print(splash)
         print(separator)
-        os.remove(current_file_name)
+        if input(f'> Are you sure to reset your keys from {current_file_name}? (y/n): ').lower().strip() == 'y':
+            os.remove(current_file_name)
         os.system('cls' if os.name == 'nt' else 'clear')
         print('reset done!')
         init()
@@ -112,7 +113,7 @@ def setupkeys(status):
             print(f"Bech32: ", hex64_to_bech32('npub', public_key))
             print(separator)
             print('Please make a backup of your keys and password, you can also backup the file generated when you confirm (startr_config.json) This file is a keystore of your keys.')
-            if input("Backup your keys!!! Type (y/yes) to continue, (n/no) to cancel: ").lower().strip() == 'y' or finish.lower().strip() == 'yes' or finish.lower().strip() == 'Y' or finish.lower().strip() == 'YES':
+            if input("Backup your keys!!! Type (y) to continue, (n/no) to cancel: ").lower().strip() == 'y':
                 print('Keep them safe!')
             else: input("You'd better have made a backup, press any key to continue")
             encrypted_string, salt_for_storage=encrypt_key(PW, PK)
