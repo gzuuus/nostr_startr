@@ -23,12 +23,13 @@ At the moment the project is functional, although there are many more features t
 ## Features:
  - [x] Crate new or store private key
  - [x] Store keys in a safe way
- - [x] Connection and launch to nostr_console (linux only)
+ - [x] Connection and launch of [nostr_console](https://github.com/vishalxl/nostr_console) in a more secure way
  - [x] Multi account/key option
  - [x] Shows a direct link and qr code when show/decrypt keys to easy share
 ### Roadmap:
- - [x] Improve Key Derivation scheme 
- - [ ] Multi configuration option for starting nostr_console
+ - [x] Improve Key Derivation scheme
+ - [ ] Nostr console auto install
+ - [ ] Multi configuration options (arguments/flags) for starting nostr_console
  - [ ] RSS reader
  - [ ] Make it compatible with more OS
  - [ ] Bundle application into a single package
