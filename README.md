@@ -69,7 +69,7 @@ At the moment the project is functional, although there are many more features t
 
 2. Follow the steps, Startr will guide you to securely store or create your nostr identity
 
-## Update Startr
+## Update only Startr
 
 1. Go to your project folder
 
@@ -97,7 +97,7 @@ At the moment the project is functional, although there are many more features t
 
 4. Enjoy new features
 
-## Update Nostr console
+## Update only Nostr console
 
 1. Stop start_app with option "6" until show the prompt and go to the project folder
 
