@@ -1,4 +1,4 @@
-
+![image](https://i.ibb.co/hsvGcMJ/startr-splash2.png)
 # Startr
 
 Startr is a utility for desktop that aims to be an assistant to help improve the UX of nostr by helping to securely store private keys and connect with your favorite clients.
