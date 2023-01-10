@@ -6,7 +6,7 @@ At the moment the project is functional, although there are many more features t
 ## Installation
 
 ### Compatibility: linux (tested in Debian, kali, raspbian), more coming
-
+With this guide you can simply copy/paste this commands in terminal
 1. Create an environment variable with the latest nostr_console version, take note of it [here](https://github.com/vishalxl/nostr_console/releases/) and modify it accordingly if is needed
 
   ```sh
