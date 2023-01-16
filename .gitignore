@@ -112,6 +112,7 @@ venv.bak/
 /startr_config.json
 /nostr_console_linux_amd64
 /all_nostr_events.txt
+/lab.py
 
 # Spyder project settings
 .spyderproject

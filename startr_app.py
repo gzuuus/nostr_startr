@@ -1,4 +1,4 @@
-import getpass, subprocess, segno
+import getpass, subprocess, segno, requests, shutil, stat, time
 from helpers import *
 from bip39 import bip39
 from nostr.key import PrivateKey
@@ -8,7 +8,7 @@ def init():
     print(splash)
     print(separator)
     fetch_config_data, current_file_name=fetch_config()
-    menu=input('1. Start nostr_console, 2. Generate new key, 3. Decrypt/show saved keys, 4. Reset key, 5. Switch identity,  6. Exit: ')
+    menu=input('1. Start nostr_console, 2. Generate new key, 3. Decrypt/show saved keys, 4. Reset key, 5. Switch identity, 6. Install/update nostr_console, 7. Exit: ')
     if menu == '1':
         os.system('cls' if os.name == 'nt' else 'clear')
         print(splash)
@@ -51,7 +51,10 @@ def init():
     if menu == '5':
         init()
     if menu == '6':
+        setup_nostr_console()
+    if menu == '7':
         quit()
+
 
 def setupkeys(status):
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -125,16 +128,6 @@ def setupkeys(status):
             os.system('cls' if os.name == 'nt' else 'clear')
             init()
 
-def check_nostr_console(session_pass, session_data, session_file):
-    nostr_console = [filename for filename in os.listdir('.') if (filename.startswith("nostr_console") and not filename.endswith(".zip"))]
-    if len(nostr_console) > 0:
-        startr(nostr_console[0], session_pass, session_data, session_file)
-        return True, session_pass, session_data
-    else:
-        print('nostr_console no detected please go to https://github.com/vishalxl/nostr_console/releases and put the release file in the same path as startr')
-        init()
-        return False
-
 def startr(nostr_console, session_pass, session_data, current_file_name):
     fetch_config_data = session_data
     print(f'User: {fetch_config_data["user"]}')
@@ -187,7 +180,41 @@ def get_json_data(user_select):
     saved_data=json_object
     return saved_data, user_select
 
-#def setup_nostr_console (...):
+def check_nostr_console(session_pass, session_data, session_file):
+    nostr_console = [filename for filename in os.listdir('.') if (filename.startswith("nostr_console") and not filename.endswith(".zip"))]
+    if len(nostr_console) > 0:
+        startr(nostr_console[0], session_pass, session_data, session_file)
+        return True, session_pass, session_data
+    else:
+        print('nostr_console no detected')
+        if input(f'> Do you want to install nostr_console automatically (y/n): ').lower().strip() == 'y':
+            setup_nostr_console()
+        init()
+        return False
+
+def setup_nostr_console():
+    url='https://api.github.com/repos/vishalxl/nostr_console/releases/latest'
+    response=requests.get(url).json()
+    for x in range(len(response['assets'])):
+        print([x], response['assets'][x]['name'])
+    selected_platform=int(input('> Select platform by index number:'))
+    print('Downloading...')
+    download_url=response['assets'][selected_platform]['browser_download_url']
+    local_file = response['assets'][selected_platform]['name']
+    data = requests.get(download_url)
+    with open(local_file, 'wb')as file:
+        file.write(data.content)
+    shutil.unpack_archive(local_file, '.')
+    nostr_console = [filename for filename in os.listdir('.') if (filename.startswith("nostr_console") and not filename.endswith(".zip"))]
+    print(nostr_console[0])
+    st = os.stat(nostr_console[0])
+    os.chmod(nostr_console[0], st.st_mode | stat.S_IEXEC | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+    print('Nostr_console successfully installed')
+    if input('> You want to start nostr_console? Type (y/n): ').lower().strip() == 'y':
+        fetch_config_data, current_file_name=fetch_config()
+        check_nostr_console(False, fetch_config_data, current_file_name)
+    else:
+        init()
 
 if __name__=='__main__':
     if not any(fname.endswith('.json') for fname in os.listdir('.')):
