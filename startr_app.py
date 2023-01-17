@@ -129,19 +129,23 @@ def setupkeys(status):
             init()
 
 def startr(nostr_console, session_pass, session_data, current_file_name):
-    fetch_config_data = session_data
-    print(f'User: {fetch_config_data["user"]}')
-    print(f'Pubkey: {fetch_config_data["pubkey"]}')
+    #fetch_config_data = session_data
+    print(f'User: {session_data["user"]}')
+    print(f'Pubkey: {session_data["pubkey"]}')
     if session_pass == False:
         pw = getpass.getpass()
     else:
         pw = session_pass
-    encrypted_string=fetch_config_data["pkey"]
+    encrypted_string=session_data["pkey"]
     decrypted_string=decrypt_key(pw, encrypted_string, current_file_name)
     if not decrypted_string == False:
         print('Go!🔥')
         command = subprocess.run([f"./{nostr_console}","-m", "12", "-l","-k",decrypted_string])
         os.system('cls' if os.name == 'nt' else 'clear')
+        init()
+    else:
+        print('Try again ')
+        time.sleep(1)
         init()
 
 def fetch_config():
@@ -197,24 +201,29 @@ def setup_nostr_console():
     response=requests.get(url).json()
     for x in range(len(response['assets'])):
         print([x], response['assets'][x]['name'])
-    selected_platform=int(input('> Select platform by index number:'))
-    print('Downloading...')
-    download_url=response['assets'][selected_platform]['browser_download_url']
-    local_file = response['assets'][selected_platform]['name']
-    data = requests.get(download_url)
-    with open(local_file, 'wb')as file:
-        file.write(data.content)
-    shutil.unpack_archive(local_file, '.')
-    nostr_console = [filename for filename in os.listdir('.') if (filename.startswith("nostr_console") and not filename.endswith(".zip"))]
-    print(nostr_console[0])
-    st = os.stat(nostr_console[0])
-    os.chmod(nostr_console[0], st.st_mode | stat.S_IEXEC | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-    print('Nostr_console successfully installed')
-    if input('> You want to start nostr_console? Type (y/n): ').lower().strip() == 'y':
-        fetch_config_data, current_file_name=fetch_config()
-        check_nostr_console(False, fetch_config_data, current_file_name)
+    selected_platform=input('> Select platform by index number:')
+    if selected_platform not in ['0','1','2','3']:
+        print('Selection out of range')
+        time.sleep(1)
+        setup_nostr_console()
     else:
-        init()
+        print('Downloading...')
+        download_url=response['assets'][int(selected_platform)]['browser_download_url']
+        local_file = response['assets'][int(selected_platform)]['name']
+        data = requests.get(download_url)
+        with open(local_file, 'wb')as file:
+            file.write(data.content)
+        shutil.unpack_archive(local_file, '.')
+        nostr_console = [filename for filename in os.listdir('.') if (filename.startswith("nostr_console") and not filename.endswith(".zip"))]
+        print(nostr_console[0])
+        st = os.stat(nostr_console[0])
+        os.chmod(nostr_console[0], st.st_mode | stat.S_IEXEC | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        print('Nostr_console successfully installed')
+        if input('> You want to start nostr_console? Type (y/n): ').lower().strip() == 'y':
+            fetch_config_data, current_file_name=fetch_config()
+            check_nostr_console(False, fetch_config_data, current_file_name)
+        else:
+            init()
 
 if __name__=='__main__':
     if not any(fname.endswith('.json') for fname in os.listdir('.')):
