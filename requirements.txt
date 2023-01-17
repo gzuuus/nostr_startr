@@ -1,7 +1,7 @@
 attrs==22.2.0
 bip39==0.0.2
 certifi==2022.12.7
-cffi==1.15.1
+cffi==1.15.0
 charset-normalizer==3.0.1
 cryptography==38.0.4
 idna==3.4
