@@ -72,6 +72,10 @@ def decrypt_key(password, to_decrypt, file):
         print('Incorrect password')
         return False
 
+#noscl integration
+#./noscl relay | sed 's/: rw//' | xargs -L1 ./noscl relay remove [remove all relays at once in linux]
+
+
 #Promt style
 splash="""\
 

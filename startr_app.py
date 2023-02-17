@@ -1,4 +1,4 @@
-import getpass, subprocess, segno, requests, shutil, stat, time
+import getpass, subprocess, requests, shutil, stat, time
 from helpers import *
 from bip39 import bip39
 from nostr.key import PrivateKey
@@ -8,7 +8,7 @@ def init():
     print(splash)
     print(separator)
     fetch_config_data, current_file_name=fetch_config()
-    menu=input('1. Start nostr_console, 2. Generate new key, 3. Decrypt/show saved keys, 4. Reset key, 5. Switch identity, 6. Install/update nostr_console, 7. Exit: ')
+    menu=input('1. Start nostr_console(nostr_console bugs), 2. Generate new key, 3. Decrypt/show saved keys, 4. Reset key, 5. Switch identity, 6. Install/update nostr_console, 7. Exit: ')
     if menu == '1':
         os.system('cls' if os.name == 'nt' else 'clear')
         print(splash)
@@ -27,11 +27,16 @@ def init():
         print(f'> Public key(HEX): {fetch_config_data["pubkey"]}')
         print(f'> Public key(npub): {fetch_config_data["npub"]}')
         print(f'> Link: https://snort.social/p/{fetch_config_data["npub"]}')
-        qr=subprocess.run(['segno', f'https://snort.social/p/{fetch_config_data["npub"]}', '--compact', '-b', '1'])
         if input('> Show private key? Type (y) to continue, (n/no) to cancel: ').lower().strip() == 'y':
             pw = getpass.getpass()
             encrypted_string=fetch_config_data['pkey']
             decrypted_string=decrypt_key(pw, encrypted_string,current_file_name)
+            while decrypted_string == False:
+                if input('Want to try again? (y/n)').lower().strip() == 'y':
+                    pw = getpass.getpass()
+                    decrypted_string=decrypt_key(pw, encrypted_string,current_file_name)
+                else:
+                    init()
             print(f'> Private key: {decrypted_string}')
             input('> Press any key to continue')
             os.system('cls' if os.name == 'nt' else 'clear')
@@ -137,12 +142,18 @@ def startr(nostr_console, session_pass, session_data, current_file_name):
     else:
         pw = session_pass
     encrypted_string=session_data["pkey"]
-    decrypted_string=decrypt_key(pw, encrypted_string, current_file_name)
+    decrypted_string=decrypt_key(pw, encrypted_string,current_file_name)
+    while decrypted_string == False:
+        if input('Want to try again? (y/n)').lower().strip() == 'y':
+            pw = getpass.getpass()
+            decrypted_string=decrypt_key(pw, encrypted_string,current_file_name)
+        else:
+            init()
     if not decrypted_string == False:
         print('Go!🔥')
+        print(separator)
         command = subprocess.run([f"./{nostr_console}","-m", "12", "-l","-k",decrypted_string])
-        os.system('cls' if os.name == 'nt' else 'clear')
-        init()
+        #os.system('cls' if os.name == 'nt' else 'clear')
     else:
         print('Try again ')
         time.sleep(1)
