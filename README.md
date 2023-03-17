@@ -180,7 +180,7 @@ python3 startr_app.py
 - [x] Nostr console auto install
 - [ ] Request your metadata from a specific relay list to store it offline
 - [ ] Rebroadcast your metadata from your offline backup to a list of specific relays
-- [ ] Multi configuration options (arguments/flags) for starting nostr_console
+- [ ] Nuke events from key in list of relays
 - [ ] RSS reader
 - [ ] Make it compatible with more OS
 - [ ] Bundle application into a single package
