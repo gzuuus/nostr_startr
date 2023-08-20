@@ -1,0 +1,12 @@
+{
+    "user": "gz",
+    "pubkey": "64e764373cf63de8e6b411e57da19a0066e8cb00a4c9b262d6e03f3702c0cea6",
+    "npub": "npub1vnnkgdeu7c773e45z8jhmgv6qpnw3jcq5nymyckkuqlnwqkqe6nqmm3uz3",
+    "pkey": "gAAAAABk4k8uAxfqf5X7uSG4MBSgKewAvSRMsK-PwEld-sz5nhpbQXTTGdbM5onkPGnRdutYsi9KYVDj4P0Ud5gazT8gn9okLEX1IRYZT5Wn7laqczfXaRaFBk79ts1HnGWP-j-26ifU9BqFQM7AHqObZNOv8-qeFlOuHVY4Qi5ESTi51S87XIA=",
+    "scrypt": {
+        "salt": "JFKaqxY16s6St05vrrQtHL7bqJjQltCQbwcE5e5pAf0=",
+        "n": 16384,
+        "r": 8,
+        "p": 1
+    }
+}

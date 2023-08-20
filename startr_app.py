@@ -38,6 +38,7 @@ def init():
                 else:
                     init()
             print(f'> Private key: {decrypted_string}')
+            print(f"Bech32: ", hex64_to_bech32('nsec', decrypted_string))
             input('> Press any key to continue')
             os.system('cls' if os.name == 'nt' else 'clear')
             init()
