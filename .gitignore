@@ -113,6 +113,7 @@ venv.bak/
 /nostr_console_linux_amd64
 /all_nostr_events.txt
 /lab*
+stc_
 # Spyder project settings
 .spyderproject
 .spyproject
