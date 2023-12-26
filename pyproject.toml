@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "nostr-startr"
+version = "0.1.0"
+description = ""
+authors = ["gzuuus <gzuuus@protonmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+attrs = "22.2.0"
+bip39 = "0.0.2"
+certifi = "2022.12.7"
+cffi = "1.15.0"
+charset-normalizer = "3.0.1"
+cryptography = "38.0.4"
+idna = "3.4"
+nostr = "0.0.2"
+pycparser = "2.21"
+requests = "2.28.2"
+secp256k1 = "0.14.0"
+urllib3 = "1.26.14"
+websocket-client = "1.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
