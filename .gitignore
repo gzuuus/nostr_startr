@@ -1,3 +1,4 @@
+stc*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -113,7 +114,6 @@ venv.bak/
 /nostr_console_linux_amd64
 /all_nostr_events.txt
 /lab*
-stc*
 # Spyder project settings
 .spyderproject
 .spyproject
